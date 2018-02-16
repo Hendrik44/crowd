@@ -1,5 +1,4 @@
 FROM blacklabelops/java:openjdk8
-MAINTAINER Steffen Bleul <sbl@blacklabelops.com>
 
 ARG CROWD_VERSION=3.1.2
 # permissions
@@ -11,11 +10,11 @@ ENV CROWD_HOME=/var/atlassian/crowd \
     CROWD_PROXY_NAME= \
     CROWD_PROXY_PORT= \
     CROWD_PROXY_SCHEME= \
-    KEYSTORE=$JAVA_HOME/jre/lib/security/cacerts
-
+    KEYSTORE=$JAVA_HOME/jre/lib/security/cacerts \
+    CONTAINER_USER=crowd \
+	CONTAINER_GROUP=crowd \
+	
 RUN export MYSQL_DRIVER_VERSION=5.1.44 && \
-    export CONTAINER_USER=crowd &&  \
-    export CONTAINER_GROUP=crowd &&  \
     addgroup -g $CONTAINER_GID $CONTAINER_GROUP &&  \
     adduser -u $CONTAINER_UID \
             -G $CONTAINER_GROUP \
@@ -99,6 +98,7 @@ ENV CROWD_URL=http://localhost:8095/crowd \
     DEMO_CONTEXT=demo \
     SPLASH_CONTEXT=ROOT
 
+USER $CONTAINER_USER:CONTAINER_GROUP
 WORKDIR /var/atlassian/crowd
 VOLUME ["/var/atlassian/crowd"]
 EXPOSE 8095
