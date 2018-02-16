@@ -5,6 +5,7 @@ ARG CROWD_VERSION=3.1.2
 ARG CONTAINER_UID=1000
 ARG CONTAINER_GID=1000
 
+# Configuration variables.
 ENV CROWD_HOME=/var/atlassian/crowd \
     CROWD_INSTALL=/opt/crowd \
     CROWD_PROXY_NAME= \
@@ -98,10 +99,22 @@ ENV CROWD_URL=http://localhost:8095/crowd \
     DEMO_CONTEXT=demo \
     SPLASH_CONTEXT=ROOT
 
+# Run this container as non-root user/account.
 USER $CONTAINER_USER:CONTAINER_GROUP
+
+# Set the default working directory as the installation directory.
 WORKDIR /var/atlassian/crowd
+
+# Set volume mount points for installation and home directory. Changes to the
+# home directory needs to be persisted as well as parts of the installation
+# directory due to eg. logs.
 VOLUME ["/var/atlassian/crowd"]
+
+# Expose default HTTP connector port.
 EXPOSE 8095
+
 COPY imagescripts /home/crowd
 ENTRYPOINT ["/bin/tini","--","/home/crowd/docker-entrypoint.sh"]
+
+# Run Atlassian crowd as a foreground process by default.
 CMD ["crowd"]
